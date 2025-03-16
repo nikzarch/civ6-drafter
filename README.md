@@ -1,2 +1,5 @@
 # civ6-drafter
-civ6drafter web app written in golang
+my mini pet project, a web service providing drafts for civilization 6 
+
+
+work in progress
