@@ -1,25 +1,24 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"project/handlers"
-	"project/middleware"
 )
 
 func main() {
-	mux := http.NewServeMux()
-	fs := http.FileServer(http.Dir("static"))
+	r := gin.Default()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:5674"},
+		AllowMethods: []string{"GET", "POST"},
+		AllowHeaders: []string{"Origin", "Content-Type"},
+	})) // middleware cors filter
+	r.Static("/static", "./static")
+	api := r.Group("/api")
+	{
+		api.GET("/nations", handlers.HandleNations)
+		api.GET("/draft", handlers.HandleDrafts)
+	}
 
-	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		http.StripPrefix("/static/", fs).ServeHTTP(w, r)
-	}) // images sharing (images itself tbd)
-
-	mux.HandleFunc("/api/sample", handlers.HandleSample)
-	mux.HandleFunc("/api/nations", handlers.HandleNations)
-	mux.HandleFunc("/api/drafts", handlers.HandleDrafts)
-	handler := middleware.CORSFilter(mux)
-	fmt.Println("Server is listening")
-	http.ListenAndServe(":8080", handler)
-
+	r.Run("localhost:8080")
 }

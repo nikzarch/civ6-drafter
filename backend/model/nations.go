@@ -7,7 +7,11 @@ type Nation struct {
 	ImageURL string `json:"image_url"`
 }
 
-var Nations = [...]Nation{
+func GetNations() []Nation {
+	return nations[:]
+}
+
+var nations = [...]Nation{
 	{1, "Америка", []int{TheodoreRoosevelt, AbrahamLincoln}, ""},
 	{2, "Аравия", []int{Saladin}, ""},
 	{3, "Ацтеки", []int{Montezuma}, ""},
@@ -33,7 +37,8 @@ var Nations = [...]Nation{
 func (n *Nation) GetLeaders() []Leader {
 	var leaders []Leader
 	for _, i := range n.Leaders {
-		leaders = append(leaders, Leaders[i])
+		leader, _ := GetLeaderById(i)
+		leaders = append(leaders, leader)
 	}
 	return leaders
 }

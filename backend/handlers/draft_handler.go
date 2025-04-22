@@ -1,26 +1,34 @@
 package handlers
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"net/http"
-	"project/controllers"
+	"project/services"
 	"strconv"
 )
 
-func HandleDrafts(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	players_amount, err_players := strconv.Atoi(r.URL.Query().Get("players"))
-	choice_for_player, err_choices := strconv.Atoi(r.URL.Query().Get("choices"))
-	if err_players != nil || err_choices != nil {
-		w.WriteHeader(http.StatusBadRequest)
+func HandleDrafts(c *gin.Context) {
+	players_amount := c.Query("players")
+	choicesForPlayer := c.Query("choices")
+	if players_amount == "" || choicesForPlayer == "" {
+		c.JSON(http.StatusBadRequest, "Players or/and choices not found")
+		return
+	}
+	playersAmountInt, err := strconv.Atoi(players_amount)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	choicesForPlayerInt, err := strconv.Atoi(choicesForPlayer)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	draft, err := controllers.GetDraft(players_amount, choice_for_player)
+	draft, err := services.GetDraft(playersAmountInt, choicesForPlayerInt)
 	if err != nil {
-		http.Error(w, `{"error": "`+err.Error()+`"}`, http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	encoder := json.NewEncoder(w)
-	encoder.Encode(draft)
+	c.JSON(http.StatusOK, draft)
 }

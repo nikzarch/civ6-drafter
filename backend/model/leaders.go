@@ -1,5 +1,7 @@
 package model
 
+import "errors"
+
 type Leader struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
@@ -37,7 +39,18 @@ const (
 	Shaka
 )
 
-var Leaders = [...]Leader{
+func GetLeaders() []Leader {
+	return leaders[:]
+}
+func GetLeaderById(id int) (Leader, error) {
+	if id < 0 || id >= len(leaders) {
+		return Leader{}, errors.New("Leader not found")
+	} else {
+		return leaders[id], nil
+	}
+}
+
+var leaders = [...]Leader{
 	{TheodoreRoosevelt, "Теодор Рузвельт", ""},
 	{AbrahamLincoln, "Авраам Линкольн", ""},
 	{Saladin, "Саладин", ""},
