@@ -9,7 +9,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:5674"},
+		AllowOrigins: []string{"http://localhost:5173"},
 		AllowMethods: []string{"GET", "POST"},
 		AllowHeaders: []string{"Origin", "Content-Type"},
 	})) // middleware cors filter

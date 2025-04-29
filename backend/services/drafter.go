@@ -13,7 +13,10 @@ type Draft struct {
 }
 
 func GetDraft(players_amount int, choice_for_player int) ([][]Draft, error) {
-	nations := model.GetNations()
+	nations, err := model.GetNations()
+	if err != nil {
+		return nil, err
+	}
 	if players_amount*choice_for_player > len(nations) {
 		return nil, errors.New("Too much choice for too many players")
 	}
@@ -26,13 +29,10 @@ func GetDraft(players_amount int, choice_for_player int) ([][]Draft, error) {
 	for i := 0; i < players_amount; i++ {
 		for j := 0; j < choice_for_player; j++ {
 			nation := draft[i*choice_for_player+j]
-			leaderIndexes := nation.Leaders // assuming all preset data is correct
-			randomIndex := leaderIndexes[rand.Intn(len(leaderIndexes))]
-			leader, _ := model.GetLeaderById(randomIndex)
 			result[i] = append(result[i], Draft{
 				ID:     i*choice_for_player + j + 1,
 				Nation: nation,
-				Leader: leader,
+				Leader: nation.Leaders[rand.Intn(len(nation.Leaders))],
 			})
 		}
 	}
